@@ -19,15 +19,17 @@
 
             var $this = $(this.element),
                 $toggle = this.settings.toggle,
-                obj = this;
-
+                obj = this,
+                active = $this.find("li.active").has("ul").children("ul"),
+                notActive =  $this.find("li").not(".active").has("ul").children("ul");
+            
+            // Repair IE8, 9 bug
             if (this.isIE() <= 9) {
-                $this.find("li.active").has("ul").children("ul").collapse("show");
-                $this.find("li").not(".active").has("ul").children("ul").collapse("hide");
-            } else {
-                $this.find("li.active").has("ul").children("ul").addClass("collapse in");
-                $this.find("li").not(".active").has("ul").children("ul").addClass("collapse");
+            	active.collapse("show");
+            	notActive.collapse("hide");
             }
+            active.addClass("collapse in");
+            notActive.addClass("collapse");
 
             //add the "doubleTapToGo" class to active items if needed
             if (obj.settings.doubleTapToGo) {
@@ -58,17 +60,26 @@
         },
 
         isIE: function() { //https://gist.github.com/padolsey/527683
-            var undef,
-                v = 3,
-                div = document.createElement("div"),
-                all = div.getElementsByTagName("i");
-
-            while (
-                div.innerHTML = "<!--[if gt IE " + (++v) + "]><i></i><![endif]-->",
-                all[0]
-            ) {
-                return v > 4 ? v : undef;
-            }
+//            var undef,
+//            v = 3,
+//            div = document.createElement("div"),
+//            all = div.getElementsByTagName("i");
+//
+//        while (
+//            div.innerHTML = "<!--[if gt IE " + (++v) + "]><i></i><![endif]-->",
+//            all[0]
+//        ) {
+//            return v > 4 ? v : undef;
+//        }
+//The original IE code bug
+           var rv = 10; // Return value assumes failure.
+        	  if (navigator.appName == 'Microsoft Internet Explorer'){
+        	    var ua = navigator.userAgent;
+        	    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        	    if (re.exec(ua) != null)
+        	      rv = parseFloat( RegExp.$1 );
+        	    }
+        	  return rv;
         },
 
         //Enable the link on the second click.
